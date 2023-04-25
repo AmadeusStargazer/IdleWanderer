@@ -26,10 +26,10 @@ def update_version_json(version):
 
 if __name__ == "__main__":
     package_name = os.environ["PACKAGE_NAME"]
-    service_account_file = os.environ["SERVICE_ACCOUNT_FILE"]
+    service_account_json = os.environ["SERVICE_ACCOUNT_JSON"]
 
-    credentials = service_account.Credentials.from_service_account_file(
-        service_account_file,
+    credentials = service_account.Credentials.from_service_account_info(
+        json.loads(service_account_json),
         scopes=["https://www.googleapis.com/auth/androidpublisher"]
     )
 
