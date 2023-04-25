@@ -25,8 +25,10 @@ jobs:
       - name: Update version.json
         env:
           PACKAGE_NAME: com.Beyondigitality.IdleWanderer
-          SERVICE_ACCOUNT_FILE: .github/secrets/service_account.json
-        run: python .github/scripts/update_version_json.py
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "$SERVICE_ACCOUNT_JSON" > service_account.json
+          python .github/scripts/update_version_json.py
 
       - name: Commit and push changes
         run: |
