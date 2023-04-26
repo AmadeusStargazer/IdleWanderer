@@ -15,11 +15,15 @@ def get_latest_app_version(package_name, credentials):
     latest_app_version = None
     for track in tracks['tracks']:
         if track['track'] == 'production':
-            latest_app_version = track['releases'][0]['versionCodes'][0]
-            break
+            for release in track['releases']:
+                if release['status'].lower() == 'completed':
+                    latest_app_version = release['versionCodes'][0]
+                    break
+            if latest_app_version is not None:
+                break
 
     if latest_app_version is None:
-        raise ValueError("Couldn't find the latest app version in the production track.")
+        raise ValueError("Couldn't find a completed app version in the production track.")
 
     return latest_app_version
 
