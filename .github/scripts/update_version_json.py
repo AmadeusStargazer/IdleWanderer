@@ -5,14 +5,25 @@ from googleapiclient.discovery import build
 
 def get_latest_app_version(package_name, credentials):
     service = build('androidpublisher', 'v3', credentials=credentials)
+    app_info = service.edits().insert(body={}, packageName=package_name).execute()
+    app_edit_id = app_info['id']
 
-    app_info = service.appDetails().get(
-        packageName=package_name).execute()
+    tracks = service.edits().tracks().list(
+        packageName=package_name,
+        editId=app_edit_id).execute()
 
-    latest_app_version = app_info['versionCode']
+    latest_app_version = None
+    for track in tracks['tracks']:
+        if track['track'] == 'production':
+            for release in track['releases']:
+                if release['status'].lower() == 'completed':
+                    latest_app_version = release['versionCodes'][0]
+                    break
+            if latest_app_version is not None:
+                break
 
     if latest_app_version is None:
-        raise ValueError("Couldn't find the latest app version in the production track.")
+        raise ValueError("Couldn't find a completed app version in the production track.")
 
     return latest_app_version
 
