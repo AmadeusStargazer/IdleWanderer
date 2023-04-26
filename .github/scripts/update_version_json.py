@@ -8,13 +8,19 @@ def get_latest_app_version(package_name, credentials):
     app_info = service.edits().insert(body={}, packageName=package_name).execute()
     app_edit_id = app_info['id']
 
-    listings = service.edits().listings().list(
+    tracks = service.edits().tracks().list(
         packageName=package_name,
         editId=app_edit_id).execute()
-    
-    print("Listings:", listings)
 
-    latest_app_version = listings['listings'][0]['version']
+    latest_app_version = None
+    for track in tracks['tracks']:
+        if track['track'] == 'production':
+            latest_app_version = track['releases'][0]['versionCodes'][0]
+            break
+
+    if latest_app_version is None:
+        raise ValueError("Couldn't find the latest app version in the production track.")
+
     return latest_app_version
 
 def update_version_json(version):
