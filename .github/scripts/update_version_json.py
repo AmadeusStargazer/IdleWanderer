@@ -11,6 +11,8 @@ def get_latest_app_version(package_name, credentials):
     listings = service.edits().listings().list(
         packageName=package_name,
         editId=app_edit_id).execute()
+    
+    print("Listings:", listings)
 
     latest_app_version = listings['listings'][0]['version']
     return latest_app_version
